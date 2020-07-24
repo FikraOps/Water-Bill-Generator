@@ -1,0 +1,141 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace WaterCompany
+{
+    public partial class BillView : Form
+    {
+        public string FormatException { get; private set; }
+
+        public BillView()
+        {
+            InitializeComponent();
+            
+            myCalc(); //initialization of all functions created below
+            rate();
+            billingCycle(); 
+            miscmessage();
+            numberofdays();
+            from();
+            tofrom();
+        }
+
+        
+        public void myCalc() //Function to calculate all charges on the Bill
+        {
+            try
+            {
+                const double wchgrate1 = 103.66;
+                const double wchgrate2 = 206.04;
+                const double svcchg = 854.90;
+                double wchg = 0;
+                double incentive = 250.00;
+                double CurrentUsage = 0;
+
+                double PConsumption;
+                double.TryParse(currreadingTxtbox.Text, out PConsumption);
+
+                double CWaterConsumption;
+                double.TryParse(currconsumptionTxtbox.Text, out CWaterConsumption);
+
+                double PrevReading;
+                double.TryParse(prevreadingTxtbox.Text, out PrevReading);
+
+                if (PConsumption > 14000)
+                {
+                    double Hcal = PConsumption / 1000;
+                    wchg = (Hcal * wchgrate2);
+
+                }
+                else if (PConsumption < 14000)
+                {
+                    double Hcal = PConsumption / 1000;
+                    wchg = (Hcal * wchgrate1);
+                }
+
+                double xfactor = -.05 * (wchg + svcchg);
+                xfactorTxtbox.Text = xfactor.ToString();
+
+                double kfactor = 0.2 * (wchg + svcchg + xfactor);
+                kfactorTxtbox.Text = kfactor.ToString();
+
+                double ttlcurrentchgs = (wchg + svcchg + xfactor + kfactor);
+                totalhargeTxtbox.Text = ttlcurrentchgs.ToString();
+
+                double ttldue = (ttlcurrentchgs - incentive);
+                totalamtdueTxtbox.Text = ttldue.ToString();
+
+                CurrentUsage = PConsumption - PrevReading;
+                currconsumptionTxtbox.Text = CurrentUsage.ToString();
+
+                svcchargeTxtbox.Text = svcchg.ToString();
+
+                waterchargeTxtbox.Text = wchg.ToString();
+
+                epiTxtbox.Text = incentive.ToString();
+
+                currchargesTxtbox.Text = ttlcurrentchgs.ToString();
+
+                lasttotalTxtbox.Text = ttldue.ToString();
+
+            }
+
+            catch (DivideByZeroException ed)
+            {
+
+                MessageBox.Show("You Attempted To Divide by Zero", ed.Message);
+            }
+            
+        }
+
+        public void rate() //Function to print Rate Type on Bill
+        {
+            rateTxtbox.Text = "Residential".ToString();
+        }
+
+        public void billingCycle()
+        {
+            billingcycleTxtbox.Text = Convert.ToInt32 (07).ToString();
+        }
+
+        public void numberofdays()
+        {
+            numberofdaysTxtbox.Text = Convert.ToInt32(31).ToString();
+        }
+
+        public void miscmessage() //Function to Print Miscellaneous message on Form
+        {
+            	miscmessageTxtbox.Text = "Service is liable for immediate disconnection for any 
+              balance that is overdue. \n Payments made after bill date are not included in this 
+              bill.".ToString();
+        }
+
+        public string RandomDate(int startYear = 2020, string outputDateFormat = "yyyy-MM-dd") //method that returns random date
+        {
+            DateTime start = new DateTime(startYear, 1, 1);
+            Random gen = new Random(Guid.NewGuid().GetHashCode());
+            int range = (DateTime.Today - start).Days;
+            return start.AddDays(gen.Next(range)).ToString(outputDateFormat);
+        }
+
+        public void tofrom()
+        {
+            toTxtbox.Text = (RandomDate(2020).ToString());
+        }
+        public void from()
+        {
+            fromTxtbox.Text = (RandomDate(2019).ToString());
+        }
+       
+
+    }
+
+}
