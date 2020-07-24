@@ -1,0 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace WaterCompany
+{
+    public partial class AdminLogin : Form
+    {
+        public AdminLogin()
+        {
+            InitializeComponent();
+        }
+
+        private void adminclearbtn_Click(object sender, EventArgs e)
+        {
+            textBox1.Clear(); //clear textboxes on this button's event
+            textBox2.Clear();
+        }
+        private void admincancelbtn_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void adminloginbtn_Click(object sender, EventArgs e)
+        {
+            SqlConnection adm = new SqlConnection(@"Data Source
+            =(LocalDB)\MSSQLLocalDB;Initial Catalog=DBSQ;Integrated Security=True");
+            
+            SqlDataAdapter adpt = new SqlDataAdapter("Select Count (*) from AdminLogins where UserName='" + textBox1.Text +"'and 
+            Password = '" + textBox2.Text + "'",adm); //used to run the query
+            
+            DataTable mytable = new DataTable();
+            adpt.Fill(mytable);
+
+                  if (mytable.Rows[0][0].ToString() == "1" && textBox1.Text.ToLower() == "admin")
+            
+                  {
+                      AdminForm admin1 = new AdminForm();
+                      MessageBox.Show("Login Successful!");
+                      admin1.Show();
+                      this.Hide();
+                  }
+                  else
+                 {
+                      MessageBox.Show("Your Username/Password is Incorrect, Try Again!");
+                      textBox1.Clear();
+                      textBox2.Clear();
+                 }
+            
+                     
+        }
+    }
+}
