@@ -1,0 +1,76 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace WaterCompany
+{
+    public partial class Account_Info : Form
+    {
+        public Account_Info()
+        {
+            InitializeComponent();
+            
+        }
+
+        public void aiviewbtn_Click(object sender, EventArgs e)
+        {
+              SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;Initial 
+            	Catalog=DBSQ;Integrated Security=True");
+            	conn.Open();
+
+            	SqlCommand komd = new SqlCommand("Select * From CustomerDataTable WHERE CustomerNumber=@CustomerNumber and PremisesNumber=@PremisesNumber", conn);
+           	  komd.Parameters.AddWithValue("@CustomerNumber", aicustomernumberTxtbox.Text);
+            	komd.Parameters.AddWithValue("PremisesNumber", aipremisesnumberTxtbox.Text);
+           	  SqlDataReader drx = komd.ExecuteReader();
+
+           	  if (drx.Read())
+            	{
+                	BillView Bill1 = new BillView(); //creating an object of Billview
+                	BillView B2 = new BillView();
+                
+
+                	MessageBox.Show("Taking You to Your Most Recent Billing Information");
+
+                	Bill1.customernumberTxtbox.Text = drx["CustomerNumber"].ToString();
+                	Bill1.premisesnumberTxtbox.Text = drx["PremisesNumber"].ToString();
+                	Bill1.svcaddressTxtbox.Text = drx["ServiceAddress"].ToString();
+                	Bill1.svcnameTxtbox.Text = drx["CustomerName"].ToString();
+                	Bill1.meternumberTxtbox.Text = drx["MeterNumber"].ToString();
+                	Bill1.metertypeTxtbox.Text = drx["MeterType"].ToString();
+                	Bill1.billdateTxtbox.Text = drx["BillDate"].ToString();
+                	Bill1.duedateTxtbox.Text = drx["DueDate"].ToString();
+                	Bill1.statusTxtbox.Text = drx["Status"].ToString();
+                	Bill1.balanbfwdTxtbox.Text = drx["BalanceBFwd"].ToString();
+                	Bill1.overdueTxtbox.Text = drx["OverdueAmt"].ToString();
+                	Bill1.paymentTxtbox.Text = drx["Payment"].ToString();
+                	Bill1.currreadingTxtbox.Text = drx["CurrReading"].ToString();
+                	Bill1.prevreadingTxtbox.Text = drx["PrevReading"].ToString();
+                	Bill1.readingtypeTxtbox.Text = drx["ReadingType"].ToString();
+                	Bill1.depositTxtbox.Text = String.Format("{0:c}",drx["Deposit"].ToString());
+                	Bill1.currconsumptionTxtbox.Text = drx["CurrConsumption"].ToString();
+                             
+                	Bill1.Show(); //calling created object to be shown(opened)
+                	B2.myCalc();  //calling Function containing calculations             
+                	this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Incorrect Account Information");
+            }    
+
+        }
+
+        private void aiclearbtn_Click(object sender, EventArgs e)
+        {
+            aicustomernumberTxtbox.Clear();
+            aipremisesnumberTxtbox.Clear();
+        }
+    }
+}
