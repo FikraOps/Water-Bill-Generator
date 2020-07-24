@@ -1,0 +1,76 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace WaterCompany
+{
+    public partial class MRLogin : Form
+    {
+        public string FormatException { get; private set; }
+
+        public MRLogin()
+        {
+            InitializeComponent();
+        }
+
+        private void mrloginbtn_Click(object sender, EventArgs e)
+        {
+            	SqlConnection custcon = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=DBSQ;Integrated Security=True"); 
+              //creation of connection to DB for Meter Readers
+            
+              SqlCommand comd = new SqlCommand("Select * From MRLoginTable Where UserName=@UserName and Password=@Password", custcon);//Sql command check if user is in DB of Meter Readers
+            	comd.Parameters.AddWithValue("@UserName", mrloginusrnameTxtbox.Text);
+            	comd.Parameters.AddWithValue("@Password", mrloginpasswdTxtbox.Text);
+
+            	SqlDataAdapter adptt = new SqlDataAdapter(comd);
+            	DataTable ntbl = new DataTable();
+            	adptt.Fill(ntbl);
+            	custcon.Open();
+            	int a = comd.ExecuteNonQuery();
+            	custcon.Close();
+
+            try
+            {
+
+                if (ntbl.Rows.Count > 0) //if user is found in DB the following actions will occour
+                {
+                    MessageBox.Show("Your Login Was Successful!");
+                    MRInput input1 = new MRInput();
+                    input1.Show();
+                    this.Close();
+                }
+                else // if not the the user will get the following message and the relevant boxes are cleared
+                {
+                    MessageBox.Show("Incorrect Username/Password...Login Failure");
+                    mrloginusrnameTxtbox.Clear();
+                    mrloginpasswdTxtbox.Clear();
+                }
+            }
+         
+          catch(FormatException ex)
+            
+           {
+                FormatException = ex.Message;
+           }
+
+        }
+
+        private void mrcancelbtn_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void mrclearbtn_Click(object sender, EventArgs e)
+        {
+            mrloginpasswdTxtbox.Clear();
+            mrloginusrnameTxtbox.Clear();
+        }
+    }
+}
