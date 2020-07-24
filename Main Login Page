@@ -1,0 +1,43 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace WaterCompany
+{
+    public partial class Login : Form
+    {
+        public Login()
+        {
+            InitializeComponent();
+        }
+
+        private void adminToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AdminLogin log1 = new AdminLogin();
+            log1.Show();
+        }
+
+        private void customerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CustomerLogin c1 = new CustomerLogin();
+            c1.Show();
+        }
+
+        private void meterReaderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MRLogin mr1 = new MRLogin();
+            mr1.Show();
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
